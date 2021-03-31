@@ -1,0 +1,81 @@
+# Silicon Labs Project Configuration Tools: slcp, v0, Component selection file.
+include:
+- path: ''
+  file_list:
+  - {path: app.h}
+package: Bluetooth
+configuration:
+- {name: SL_STACK_SIZE, value: '2752'}
+- {name: SL_HEAP_SIZE, value: '9200'}
+- condition: [iostream_usart]
+  name: SL_BOARD_ENABLE_VCOM
+  value: '1'
+- condition: [si70xx_driver, i2cspm]
+  name: SL_BOARD_ENABLE_SENSOR_RHT
+  value: '1'
+description: |
+  Implements a GATT Server with the Health Thermometer Profile, which enables a Client device to connect and get temperature data. Temperature is read from the Si7021 digital relative humidity and temperature sensor of the WSTK or of the Thunderboard.
+label: LoRaMac-Node-xG22-soc_thermometer
+readme:
+- {path: 'C:/SiliconLabs/SimplicityStudio/v5/developer/sdks/gecko_sdk_suite/v3.1/app/bluetooth/documentation/example/soc_thermometer/readme.html'}
+source:
+- {path: main.c}
+- {path: app.c}
+- {path: app_properties.c}
+project_name: LoRaMac-Node-xG22-soc_thermometer
+quality: production
+template_contribution:
+- condition: [cli]
+  name: cli_command
+  priority: 0
+  value: {name: hello, handler: hello, help: hello}
+component:
+- {id: iostream_retarget_stdio}
+- instance: [btn0]
+  id: simple_button
+- {id: brd4182a_b03}
+- instance: [example]
+  id: cli
+- {id: simple_timer}
+- {id: mpu}
+- instance: [led0]
+  id: simple_led
+- {id: bluetooth_feature_power_control}
+- {id: rail_util_pti}
+- {id: app_log}
+- {id: health_thermometer}
+- {id: brd4001a}
+- instance: [vcom]
+  id: iostream_usart
+- instance: [sensor]
+  id: i2cspm
+- {id: printf}
+- {id: component_catalog}
+- {id: EFR32MG22C224F512IM40}
+- {id: ota_dfu}
+- {id: bootloader_interface}
+- {id: app_assert}
+- {id: bt_fp_soc_server}
+- {id: sensor_rht}
+other_file:
+- {path: create_bl_files.bat}
+- {path: create_bl_files.sh}
+- {path: readme_img0.png}
+- {path: readme_img1.png}
+- {path: readme_img2.png}
+- {path: readme_img3.png}
+- {path: readme_img4.png}
+- {path: readme_img5.png}
+- {path: readme_img6.png}
+- {path: readme_img7.png}
+- {path: readme_img8.png}
+tag: [prebuilt_demo, 'hardware:component:sensor:si7021', 'hardware:rf:band:2400',
+  'hardware:component:button:1+', 'hardware:component:led:1+']
+category: Bluetooth Examples
+toolchain_settings: []
+config_file: []
+ui_hints:
+  highlight:
+  - {path: readme.html, focus: true}
+  - {path: config/btconf/gatt_configuration.btconf}
+
