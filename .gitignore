@@ -17,10 +17,10 @@
 *.pch
 
 # Libraries
-*.lib
-*.a
-*.la
-*.lo
+# *.lib
+# *.a
+# *.la
+# *.lo
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -50,3 +50,5 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+GNU ARM v7.2.1 - Debug/
+GNU ARM v7.2.1 - Release/
