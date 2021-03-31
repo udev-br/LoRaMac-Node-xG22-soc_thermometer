@@ -1,0 +1,1 @@
+# LoRaMac-Node-xG22-soc_thermometer
