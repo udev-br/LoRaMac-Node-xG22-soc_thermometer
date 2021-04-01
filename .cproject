@@ -109,13 +109,15 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/config}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/apps/LoRaMac/common}&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/comm_lorawan/common}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/apps/LoRaMac/common/LmHandler}&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/comm_lorawan/common/LmHandler}&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/apps/LoRaMac/common/LmHandler/packages}&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/comm_lorawan/common/LmHandler/packages}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/mac}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/peripherals/soft-se}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/radio}&quot;"/>
                                     									
@@ -124,8 +126,6 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/system}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/boards}&quot;"/>
-                                    									
-                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/mac}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
                                     									
@@ -642,6 +642,146 @@
                                     <listOptionValue builtIn="false" value="EFR32MG22C224F512IM40=1"/>
                                     									
                                     <listOptionValue builtIn="false" value="MBEDTLS_CONFIG_FILE=&lt;mbedtls_config.h&gt;"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.1824825168" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/config}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/comm_lorawan/common}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/comm_lorawan/common/LmHandler}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/comm_lorawan/common/LmHandler/packages}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/mac}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/peripherals/soft-se}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/radio}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/mac/region}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/system}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/vendor/LoRaMac-node-4.4.7/src/boards}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/common/toolchain/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/hardware/driver/mx25_flash_shutdown/inc/sl_mx25_flash_shutdown_usart}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/driver/leddrv/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/iostream/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/emdrv/nvm3/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/device_init/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/app/bluetooth/common/simple_timer}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/sl_component/sl_protocol_crypto/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/common/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/mbedtls/include}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/emlib/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/protocol/bluetooth/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/sl_component/sl_cryptoacc_library/include}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/hfxo_manager/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/emdrv/common/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/hardware/board/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/ram_interrupt_vector_init/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/app/bluetooth/common/app_log}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/cli/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/common}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/protocol/ble}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/protocol/ieee802154}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/protocol/zwave}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/protocol/mfm}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/chip/efr32/efr32xg2x}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/sl_component/se_manager/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/sl_component/se_manager/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/app/bluetooth/common/health_thermometer}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/hardware/driver/si70xx/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/printf}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/printf/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/sl_component/sl_alt/include}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/sl_component/sl_mbedtls_support/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/driver/button/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/app/bluetooth/common/app_assert}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/app/bluetooth/common/sensor_rht}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/sleeptimer/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/mpu/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/system/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/emdrv/gpiointerrupt/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/plugin/rail_util_pti}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/sl_component/sl_psa_driver/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/udelay/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/service/power_manager/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/driver/i2cspm/inc}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/silicon_labs/silabs_core/memory_manager}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/app/bluetooth/common/sensor_select}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/plugin/pa-conversions}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/radio/rail_lib/plugin/pa-conversions/efr32xg22}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/Device/SiliconLabs/EFR32MG22/Include}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/app/bluetooth/common/ota_dfu}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/sl_component/sl_mbedtls_support/config}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/util/third_party/crypto/mbedtls/library}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/bootloader}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/bootloader/api}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gecko_sdk_3.1.1/platform/CMSIS/Include}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/autogen}&quot;"/>
                                     								
                                 </option>
                                 								
