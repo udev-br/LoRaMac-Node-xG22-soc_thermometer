@@ -33,6 +33,7 @@
 #include "sl_sensor_rht.h"
 #include "sl_health_thermometer.h"
 #include "app.h"
+#include "comm_lorawan/comm_lorawan.h"
 
 // Connection handle.
 static uint8_t app_connection = 0;
@@ -48,6 +49,9 @@ static sl_simple_timer_t app_periodic_timer;
 
 // Periodic timer callback.
 static void app_periodic_timer_cb(sl_simple_timer_t *timer, void *data);
+
+static bool b_comm_lorawan_init = false;
+static bool b_comm_lorawan_started = false;
 
 /**************************************************************************//**
  * Application Init.
@@ -70,6 +74,21 @@ SL_WEAK void app_process_action(void)
   // This is called infinitely.                                              //
   // Do not call blocking functions from here!                               //
   /////////////////////////////////////////////////////////////////////////////
+
+  if ( b_comm_lorawan_init ) {
+
+      b_comm_lorawan_init = false;
+      b_comm_lorawan_started = true;
+
+      comm_lorawan_init();
+
+  }
+  if ( b_comm_lorawan_started ) {
+
+      comm_lorawan_loop();
+
+  }
+
 }
 #endif
 
@@ -92,6 +111,10 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     // This event indicates the device has started and the radio is ready.
     // Do not call any stack command before receiving this boot event!
     case sl_bt_evt_system_boot_id:
+
+      // Wait bt boot to start lorawan stack
+      b_comm_lorawan_init = true;
+
       // Print boot message.
       sl_app_log("Bluetooth stack booted: v%d.%d.%d-b%d\n",
                  evt->data.evt_system_boot.major,
