@@ -182,8 +182,8 @@ void TimerSetValue( TimerEvent_t *obj, uint32_t value ) {
 
 }
 
-void TimerStart( TimerEvent_t *obj )
-{
+void TimerStart( TimerEvent_t *obj ) {
+
   sl_simple_timer_callback_t callback;
 
   uint8_t timer_idx = timer_find_index(obj);
@@ -224,12 +224,14 @@ void TimerStop( TimerEvent_t * obj ) {
 
 }
 
-TimerTime_t TimerGetCurrentTime( void )
-{
+TimerTime_t TimerGetCurrentTime( void ) {
 
+  return 0;
 }
 
-TimerTime_t TimerGetElapsedTime( TimerTime_t past )
-{
+TimerTime_t TimerGetElapsedTime( TimerTime_t past ) {
 
+  (void)past;
+
+  return 0;
 }
