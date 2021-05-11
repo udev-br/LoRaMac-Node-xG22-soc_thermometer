@@ -33,7 +33,7 @@
 #include "sl_sensor_rht.h"
 #include "sl_health_thermometer.h"
 #include "app.h"
-#include "comm_lorawan/comm_lorawan.h"
+#include "comm_lorawan.h"
 
 // Connection handle.
 static uint8_t app_connection = 0;
@@ -45,13 +45,19 @@ static uint8_t advertising_set_handle = 0xff;
 static volatile bool app_btn0_pressed = false;
 
 // Periodic timer handle.
-static sl_simple_timer_t app_periodic_timer;
+static sl_simple_timer_t ble_periodic_timer;
+static sl_simple_timer_t lora_periodic_timer;
 
 // Periodic timer callback.
-static void app_periodic_timer_cb(sl_simple_timer_t *timer, void *data);
+static void ble_periodic_timer_cb(sl_simple_timer_t *timer, void *data);
+static void lora_periodic_timer_cb(sl_simple_timer_t *timer, void *data);
 
 static bool b_comm_lorawan_init = false;
 static bool b_comm_lorawan_started = false;
+
+#define LORA_TX_INTERVAL_SEC  30
+
+static int tx_counter = 0;
 
 /**************************************************************************//**
  * Application Init.
@@ -77,10 +83,24 @@ SL_WEAK void app_process_action(void)
 
   if ( b_comm_lorawan_init ) {
 
+      sl_status_t sc;
+
       b_comm_lorawan_init = false;
       b_comm_lorawan_started = true;
 
       comm_lorawan_init();
+
+      sc = sl_simple_timer_start(&lora_periodic_timer,
+                                 SL_BT_HT_MEASUREMENT_INTERVAL_SEC * 1000,
+                                 lora_periodic_timer_cb,
+                                 NULL,
+                                 true);
+      sl_app_assert(sc == SL_STATUS_OK,
+                    "[E: 0x%04x] Failed to start periodic timer\n",
+                    (int)sc);
+
+      // Send first indication.
+      lora_periodic_timer_cb(&lora_periodic_timer, NULL);
 
   }
   if ( b_comm_lorawan_started ) {
@@ -238,7 +258,7 @@ void sl_bt_connection_closed_cb(uint16_t reason, uint8_t connection)
   sl_status_t sc;
 
   // Stop timer.
-  sc = sl_simple_timer_stop(&app_periodic_timer);
+  sc = sl_simple_timer_stop(&ble_periodic_timer);
   sl_app_assert(sc == SL_STATUS_OK,
                 "[E: 0x%04x] Failed to stop periodic timer\n",
                 (int)sc);
@@ -259,21 +279,21 @@ void sl_bt_ht_temperature_measurement_indication_changed_cb(uint8_t connection,
   // Indication or notification enabled.
   if (gatt_disable != client_config) {
     // Start timer used for periodic indications.
-    sc = sl_simple_timer_start(&app_periodic_timer,
+    sc = sl_simple_timer_start(&ble_periodic_timer,
                                SL_BT_HT_MEASUREMENT_INTERVAL_SEC * 1000,
-                               app_periodic_timer_cb,
+                               ble_periodic_timer_cb,
                                NULL,
                                true);
     sl_app_assert(sc == SL_STATUS_OK,
                   "[E: 0x%04x] Failed to start periodic timer\n",
                   (int)sc);
     // Send first indication.
-    app_periodic_timer_cb(&app_periodic_timer, NULL);
+    ble_periodic_timer_cb(&ble_periodic_timer, NULL);
   }
   // Indications disabled.
   else {
     // Stop timer used for periodic indications.
-    (void)sl_simple_timer_stop(&app_periodic_timer);
+    (void)sl_simple_timer_stop(&ble_periodic_timer);
   }
 }
 
@@ -304,7 +324,7 @@ void sl_button_on_change(const sl_button_t *handle)
  * Timer callback
  * Called periodically to time periodic temperature measurements and indications.
  *****************************************************************************/
-static void app_periodic_timer_cb(sl_simple_timer_t *timer, void *data)
+static void ble_periodic_timer_cb(sl_simple_timer_t *timer, void *data)
 {
   (void)data;
   (void)timer;
@@ -312,17 +332,11 @@ static void app_periodic_timer_cb(sl_simple_timer_t *timer, void *data)
   int32_t temperature = 0;
   uint32_t humidity = 0;
   float tmp_c = 0.0;
-  // float tmp_f = 0.0;
 
   // Measure temperature; units are % and milli-Celsius.
   sc = sl_sensor_rht_get(&humidity, &temperature);
   if (sc != SL_STATUS_OK) {
     sl_app_log("Warning! Invalid RHT reading: %lu %ld\n", humidity, temperature);
-  }
-
-  // button 0 pressed: overwrite temperature with -20C.
-  if (app_btn0_pressed) {
-    temperature = -20 * 1000;
   }
 
   tmp_c = (float)temperature / 1000;
@@ -331,16 +345,65 @@ static void app_periodic_timer_cb(sl_simple_timer_t *timer, void *data)
   sc = sl_bt_ht_temperature_measurement_indicate(app_connection,
                                                  temperature,
                                                  false);
-  // Conversion to Fahrenheit: F = C * 1.8 + 32
-  // tmp_f = (float)(temperature*18+320000)/10000;
-  // sl_app_log("Temperature: %5.2f F\n", tmp_f);
-  // Send temperature measurement indication to connected client.
-  // sc = sl_bt_ht_temperature_measurement_indicate(app_connection,
-  //                                                (temperature*18+320000)/10,
-  //                                                true);
   if (sc) {
     sl_app_log("Warning! Failed to send temperature measurement indication\n");
   }
+
+}
+
+static void lora_periodic_timer_cb(sl_simple_timer_t *timer, void *data)
+{
+  (void)data;
+  (void)timer;
+  sl_status_t sc;
+  int32_t temperature = 0;
+  uint32_t humidity = 0;
+  uint8_t lora_data[8];
+
+  // Measure temperature; units are % and milli-Celsius.
+  sc = sl_sensor_rht_get(&humidity, &temperature);
+  if (sc != SL_STATUS_OK) {
+    sl_app_log("Warning! Invalid RHT reading: %lu %ld\n", humidity, temperature);
+  }
+
+  sl_app_log("Temperature / Humidity: %5.2f C / %5.2f RH\n", temperature/1000.0, humidity/1000.0);
+
+ // Time to send ?
+  if ( ++tx_counter >= LORA_TX_INTERVAL_SEC ) {
+
+    tx_counter = 0;
+
+    memcpy( &lora_data[0], &temperature, 4);
+    memcpy( &lora_data[4], &humidity, 4);
+
+    if ( comm_lorawan_request_tx( lora_data, 8, 1, true ) == true ) {
+        sl_app_log("comm_lorawan_request_tx_ok\n");
+    }
+    else {
+        sl_app_log("comm_lorawan_busy\n");
+    }
+
+  }
+
+}
+
+void comm_lorawan_rx_callback ( LmHandlerAppData_t* appData, LmHandlerRxParams_t* params ) {
+
+  (void)params;
+
+  switch( appData->Port ) {
+
+    case 1: {
+      __NOP();
+      break;
+    }
+
+    default: {
+      break;
+    }
+
+  }
+
 }
 
 #ifdef SL_CATALOG_CLI_PRESENT

@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 #include "sl_cli.h"
 
@@ -10,7 +11,6 @@
 #include "Commissioning.h"
 #include "LmHandler.h"
 #include "LmhpCompliance.h"
-#include "CayenneLpp.h"
 #include "LmHandlerMsgDisplay.h"
 #include "board-config.h"
 #include "board.h"
@@ -30,22 +30,11 @@
 #define LORAWAN_DEFAULT_CLASS                       CLASS_A
 
 /*!
- * Defines the application data transmission duty cycle. 5s, value in [ms].
- */
-#define APP_TX_DUTYCYCLE                            30000
-
-/*!
- * Defines a random delay for application data transmission duty cycle. 1s,
- * value in [ms].
- */
-#define APP_TX_DUTYCYCLE_RND                        1000
-
-/*!
  * LoRaWAN Adaptive Data Rate
  *
  * \remark Please note that when ADR is enabled the end-device should be static
  */
-#define LORAWAN_ADR_STATE                           LORAMAC_HANDLER_ADR_ON
+#define LORAWAN_ADR_STATE                           LORAMAC_HANDLER_ADR_OFF
 
 /*!
  * Default datarate
@@ -53,11 +42,6 @@
  * \remark Please note that LORAWAN_DEFAULT_DATARATE is used only when ADR is disabled
  */
 #define LORAWAN_DEFAULT_DATARATE                    DR_0
-
-/*!
- * LoRaWAN confirmed messages
- */
-#define LORAWAN_DEFAULT_CONFIRMED_MSG_STATE         LORAMAC_HANDLER_UNCONFIRMED_MSG
 
 /*!
  * User application data buffer size
@@ -70,21 +54,6 @@
  * \remark Please note that ETSI mandates duty cycled transmissions. Use only for test purposes
  */
 #define LORAWAN_DUTYCYCLE_ON                        true
-
-/*!
- * LoRaWAN application port
- * @remark The allowed port range is from 1 up to 223. Other values are reserved.
- */
-#define LORAWAN_APP_PORT                            2
-
-/*!
- *
- */
-typedef enum
-{
-    LORAMAC_HANDLER_TX_ON_TIMER,
-    LORAMAC_HANDLER_TX_ON_EVENT,
-}LmHandlerTxEvents_t;
 
 /*!
  * User application data
@@ -101,12 +70,6 @@ static LmHandlerAppData_t AppData =
     .Port = 0
 };
 
-/*!
- * Timer to handle the application data transmission duty cycle
- */
-static TimerEvent_t TxTimer;
-
-
 static void OnMacProcessNotify( void );
 static void OnNvmDataChange( LmHandlerNvmContextStates_t state, uint16_t size );
 static void OnNetworkParametersChange( CommissioningParams_t* params );
@@ -122,14 +85,7 @@ static void OnSysTimeUpdate( bool isSynchronized, int32_t timeCorrection );
 #else
 static void OnSysTimeUpdate( void );
 #endif
-static void PrepareTxFrame( void );
-static void StartTxProcess( LmHandlerTxEvents_t txEvent );
-static void UplinkProcess( void );
 
-/*!
- * Function executed on TxTimer event
- */
-static void OnTxTimerEvent( void* context );
 
 static LmHandlerCallbacks_t LmHandlerCallbacks =
 {
@@ -152,7 +108,6 @@ static LmHandlerCallbacks_t LmHandlerCallbacks =
 static LmHandlerParams_t LmHandlerParams =
 {
     .Region = ACTIVE_REGION,
-    //.Region = LORAMAC_REGION_AU915,
     .AdrEnable = LORAWAN_ADR_STATE,
     .TxDatarate = LORAWAN_DEFAULT_DATARATE,
     .PublicNetworkEnable = LORAWAN_PUBLIC_NETWORK,
@@ -176,11 +131,9 @@ static LmhpComplianceParams_t LmhpComplianceParams =
  */
 static volatile uint8_t IsMacProcessPending = 0;
 
-static volatile uint8_t IsTxFramePending = 0;
-
 void comm_lorawan_init ( void ) {
 
-  SpiInit( &SX126x.Spi, SPI_1, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, NC );
+  SpiInit( &SX126x.Spi, SPI_1, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, RADIO_NSS );
   SX126xIoInit( );
 
   if ( LmHandlerInit( &LmHandlerCallbacks, &LmHandlerParams ) != LORAMAC_HANDLER_SUCCESS )
@@ -216,8 +169,6 @@ void comm_lorawan_init ( void ) {
 
   LmHandlerJoin( );
 
-  StartTxProcess( LORAMAC_HANDLER_TX_ON_TIMER );
-
 }
 
 
@@ -225,9 +176,6 @@ void comm_lorawan_loop ( void ) {
 
   // Processes the LoRaMac events
   LmHandlerProcess( );
-
-  // Process application uplinks management
-  UplinkProcess( );
 
   CRITICAL_SECTION_BEGIN( );
   if( IsMacProcessPending == 1 )
@@ -243,6 +191,35 @@ void comm_lorawan_loop ( void ) {
   CRITICAL_SECTION_END( );
 
 
+}
+
+bool comm_lorawan_request_tx ( uint8_t * p_data, uint8_t size, uint8_t port, bool confirmed ) {
+
+  if( LmHandlerIsBusy( ) == true )
+  {
+      return false;
+  }
+
+  memcpy(AppDataBuffer,p_data,size);
+
+  AppData.BufferSize = size;
+  AppData.Port       = port;
+
+  if( LmHandlerSend( &AppData, confirmed ) == LORAMAC_HANDLER_SUCCESS )
+  {
+      return true;
+  }
+
+  return false;
+
+}
+
+__attribute__ ((weak)) void comm_lorawan_rx_callback ( LmHandlerAppData_t* appData, LmHandlerRxParams_t* params ) {
+
+  (void)appData;
+  (void)params;
+
+  // application needs to implement this function
 }
 
 static void OnMacProcessNotify( void )
@@ -292,21 +269,7 @@ static void OnRxData( LmHandlerAppData_t* appData, LmHandlerRxParams_t* params )
 {
     DisplayRxUpdate( appData, params );
 
-    switch( appData->Port )
-    {
-    case 1: // The application LED can be controlled on port 1 or 2
-    case LORAWAN_APP_PORT:
-        {
-          __NOP();
-        }
-        break;
-    default:
-        break;
-    }
-
-    // Switch LED 2 ON for each received downlink
-    //GpioWrite( &Led2, 1 );
-    //TimerStart( &Led2Timer );
+    comm_lorawan_rx_callback( appData, params );
 }
 
 static void OnClassChange( DeviceClass_t deviceClass )
@@ -351,6 +314,9 @@ static void OnBeaconStatusChange( LoRaMAcHandlerBeaconParams_t* params )
 static void OnSysTimeUpdate( bool isSynchronized, int32_t timeCorrection )
 {
 
+  (void)isSynchronized;
+  (void)timeCorrection;
+
 }
 #else
 static void OnSysTimeUpdate( void )
@@ -358,81 +324,3 @@ static void OnSysTimeUpdate( void )
 
 }
 #endif
-
-/*!
- * Prepares the payload of the frame and transmits it.
- */
-static void PrepareTxFrame( void )
-{
-    if( LmHandlerIsBusy( ) == true )
-    {
-        return;
-    }
-
-    uint8_t channel = 0;
-
-    AppData.Port = LORAWAN_APP_PORT;
-
-    CayenneLppReset( );
-    CayenneLppAddDigitalInput( channel++, 1 );
-    CayenneLppAddAnalogInput( channel++, BoardGetBatteryLevel( ) * 100 / 254 );
-
-    CayenneLppCopy( AppData.Buffer );
-    AppData.BufferSize = CayenneLppGetSize( );
-
-    if( LmHandlerSend( &AppData, LORAWAN_DEFAULT_CONFIRMED_MSG_STATE ) == LORAMAC_HANDLER_SUCCESS )
-    {
-        __NOP();
-    }
-}
-
-static void StartTxProcess( LmHandlerTxEvents_t txEvent )
-{
-    switch( txEvent )
-    {
-    default:
-        // Intentional fall through
-    case LORAMAC_HANDLER_TX_ON_TIMER:
-        {
-            // Schedule 1st packet transmission
-            TimerInit( &TxTimer, OnTxTimerEvent );
-            TimerSetValue( &TxTimer, APP_TX_DUTYCYCLE  + randr( -APP_TX_DUTYCYCLE_RND, APP_TX_DUTYCYCLE_RND ) );
-            OnTxTimerEvent( NULL );
-        }
-        break;
-    case LORAMAC_HANDLER_TX_ON_EVENT:
-        {
-        }
-        break;
-    }
-}
-
-static void UplinkProcess( void )
-{
-    uint8_t isPending = 0;
-    CRITICAL_SECTION_BEGIN( );
-    isPending = IsTxFramePending;
-    IsTxFramePending = 0;
-    CRITICAL_SECTION_END( );
-    if( isPending == 1 )
-    {
-        PrepareTxFrame( );
-    }
-}
-
-/*!
- * Function executed on TxTimer event
- */
-static void OnTxTimerEvent( void* context )
-{
-    (void) context;
-
-    TimerStop( &TxTimer );
-
-    IsTxFramePending = 1;
-
-    // Schedule next transmission
-    TimerSetValue( &TxTimer, APP_TX_DUTYCYCLE + randr( -APP_TX_DUTYCYCLE_RND, APP_TX_DUTYCYCLE_RND ) );
-    TimerStart( &TxTimer );
-}
-
