@@ -297,8 +297,15 @@ void SX126xAntSwOff( void )
 
 bool SX126xCheckRfFrequency( uint32_t frequency )
 {
+    (void)frequency;
+
     // Implement check. Currently all frequencies are supported
     return true;
+}
+
+uint32_t SX126xGetDio1PinState( void )
+{
+    return GpioRead( &SX126x.DIO1 );
 }
 
 #if defined( USE_RADIO_DEBUG )
