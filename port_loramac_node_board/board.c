@@ -99,21 +99,6 @@ uint8_t GetBoardPowerSource( void )
 
 #if !defined ( __CC_ARM )
 
-///*
-// * Function to be used by stdout for printf etc
-// */
-//int _write( int fd, const void *buf, size_t count )
-//{
-//
-//}
-//
-///*
-// * Function to be used by stdin for scanf etc
-// */
-//int _read( int fd, const void *buf, size_t count )
-//{
-//
-//}
 
 #else
 
